@@ -154,7 +154,7 @@ class Less_Tree_Mixin_Call extends Less_Tree{
 	 * Format the args for use in exception messages
 	 *
 	 */
-	private function Format($args){
+	public static function Format($args){
 		$message = array();
 		if( $args ){
 			foreach($args as $a){

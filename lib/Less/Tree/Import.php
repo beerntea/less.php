@@ -165,26 +165,28 @@ class Less_Tree_Import extends Less_Tree{
 
 		//import once
 		if( $evald->skip( $full_path, $env) ){
-			return array();
+      return array( new Less_Tree_Comment('/* DEBUG Import once skipped file '.$full_path.' */', FALSE) );
 		}
 
 		if( $this->options['inline'] ){
 			//todo needs to reference css file not import
 			//$contents = new Less_Tree_Anonymous($this->root, 0, array('filename'=>$this->importedFilename), true );
 
-			Less_Parser::AddParsedFile($full_path);
-			$contents = new Less_Tree_Anonymous( file_get_contents($full_path), 0, array(), true );
+      Less_Parser::AddParsedFile($full_path);
+      $contents = array();
+      $contents[] = new Less_Tree_Comment('/* DEBUG Import file inline '.$full_path.' */', FALSE);
+			$contents[] = new Less_Tree_Anonymous( file_get_contents($full_path), 0, array(), true );
 
 			if( $this->features ){
-				return new Less_Tree_Media( array($contents), $this->features->value );
+				return new Less_Tree_Media( $contents, $this->features->value );
 			}
 
-			return array( $contents );
+			return $contents;
 		}
 
 		// optional (need to be before "CSS" to support optional CSS imports. CSS should be checked only if empty($this->currentFileInfo))
 		if( isset($this->options['optional']) && $this->options['optional'] && !file_exists($full_path) && (!$evald->css || !empty($this->currentFileInfo))) {
-			return array();
+      return array( new Less_Tree_Comment('/* DEBUG Import optional skipped file '.$full_path.' */', FALSE) );
 		}
 
 
@@ -218,10 +220,11 @@ class Less_Tree_Import extends Less_Tree{
 					$import_dirs[ $this->currentFileInfo['currentDirectory'] ] = $this->currentFileInfo['uri_root'];
 				}
 
-			}else{
+      }else{
+        // We don't want LessPHP to be smart about (absolute) paths, everything will be handled via the import_dirs. -- Ivo
 				//otherwise, the file should be relative to the server root
 				if( $this->currentFileInfo ) {
-					$import_dirs[ $this->currentFileInfo['entryPath'] ] = $this->currentFileInfo['entryUri'];
+					//$import_dirs[ $this->currentFileInfo['entryPath'] ] = $this->currentFileInfo['entryUri'];
 				}
 				//if the user supplied entryPath isn't the actual root
 				$import_dirs[ $_SERVER['DOCUMENT_ROOT'] ] = '';

@@ -143,10 +143,12 @@ class Less_Tree_Ruleset extends Less_Tree{
 		for($i=0; $i < $rsRuleCnt; $i++){
 			$rule = $ruleset->rules[$i];
 
-			if( $rule instanceof Less_Tree_Mixin_Call ){
+      if( $rule instanceof Less_Tree_Mixin_Call ){
+        $org_rule = $rule;
 				$rule = $rule->compile($env);
 
-				$temp = array();
+        $temp = array();
+        $temp[] = new Less_Tree_Comment('/* DEBUG BEGIN Mixin Call '.$org_rule->selector->toCSS().'('.$org_rule->Format($org_rule->arguments).')'.' */', FALSE);
 				foreach($rule as $r){
 					if( ($r instanceof Less_Tree_Rule) && $r->variable ){
 						// do not pollute the scope if the variable is
@@ -158,23 +160,27 @@ class Less_Tree_Ruleset extends Less_Tree{
 					}else{
 						$temp[] = $r;
 					}
-				}
+        }
+        $temp[] = new Less_Tree_Comment('/* DEBUG END Mixin Call '.$org_rule->selector->toCSS().'('.$org_rule->Format($org_rule->arguments).')'.' */', FALSE);
 				$temp_count = count($temp)-1;
 				array_splice($ruleset->rules, $i, 1, $temp);
 				$rsRuleCnt += $temp_count;
 				$i += $temp_count;
 				$ruleset->resetCache();
 
-			}elseif( $rule instanceof Less_Tree_RulesetCall ){
+      }elseif( $rule instanceof Less_Tree_RulesetCall ){
+        $org_rule = $rule;
 
 				$rule = $rule->compile($env);
-				$rules = array();
+        $rules = array();
+        $rules[] = new Less_Tree_Comment('/* DEBUG BEGIN Ruleset Call '.$org_rule->variable.' */', FALSE);
 				foreach($rule->rules as $r){
 					if( ($r instanceof Less_Tree_Rule) && $r->variable ){
 						continue;
 					}
 					$rules[] = $r;
-				}
+        }
+        $rules[] = new Less_Tree_Comment('/* DEBUG END Ruleset Call '.$org_rule->variable.' */', FALSE);
 
 				array_splice($ruleset->rules, $i, 1, $rules);
 				$temp_count = count($rules);
@@ -215,7 +221,10 @@ class Less_Tree_Ruleset extends Less_Tree{
 			$rules = $this->rules;
 		}else{
 			$rules = array();
-		}
+    }
+
+    array_unshift($rules, new Less_Tree_Comment('/* DEBUG BEGIN Source File */', FALSE));
+    array_push($rules, new Less_Tree_Comment('/* DEBUG END Source File */', FALSE));
 
 		$ruleset = new Less_Tree_Ruleset($selectors, $rules, $this->strictImports);
 

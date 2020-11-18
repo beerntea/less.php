@@ -679,6 +679,14 @@ class Less_Parser{
 
 		$this->UnsetInput();
 
+    $root = new Less_Tree_Ruleset(array(), $rules);
+    $root->root = true;
+    $root->firstRoot = true;
+    $this->PreVisitors($root);
+    $rules = $root->rules;
+    array_unshift($rules, new Less_Tree_Comment('/* DEBUG BEGIN Source File '.$file_path.' */', FALSE));
+    array_push($rules, new Less_Tree_Comment('/* DEBUG END Source File '.$file_path.' */', FALSE));
+
 
 		//save the cache
 		if( $cache_file ){
