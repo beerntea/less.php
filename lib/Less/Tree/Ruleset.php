@@ -223,9 +223,6 @@ class Less_Tree_Ruleset extends Less_Tree{
 			$rules = array();
     }
 
-    array_unshift($rules, new Less_Tree_Comment('/* DEBUG BEGIN Source File */', FALSE));
-    array_push($rules, new Less_Tree_Comment('/* DEBUG END Source File */', FALSE));
-
 		$ruleset = new Less_Tree_Ruleset($selectors, $rules, $this->strictImports);
 
 		$ruleset->originalRuleset = $this->ruleset_id;
