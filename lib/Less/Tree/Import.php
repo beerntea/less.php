@@ -227,7 +227,7 @@ class Less_Tree_Import extends Less_Tree{
 					//$import_dirs[ $this->currentFileInfo['entryPath'] ] = $this->currentFileInfo['entryUri'];
 				}
 				//if the user supplied entryPath isn't the actual root
-				$import_dirs[ $_SERVER['DOCUMENT_ROOT'] ] = '';
+				//$import_dirs[ $_SERVER['DOCUMENT_ROOT'] ] = '';
 
 			}
 
